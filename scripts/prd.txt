@@ -1,0 +1,140 @@
+<PRD>
+
+**Product Name:** StreamTrader (Working Title)
+**Version:** MVP (Minimum Viable Product)
+**Date:** October 26, 2023
+
+# Overview
+
+StreamTrader is an automated software application that runs 24/7, streaming live on Twitch. It simulates interpreting financial news (initially from 1-2 subreddits) related to pre-defined upcoming events (expecting 1-2/week initially). Its core purpose is to create engaging, dynamic streaming content by showcasing an automated "personality" forming opinions (Put/Call/Hold bias) based on incoming news sentiment. The MVP focuses only on this core loop: news ingestion, basic sentiment analysis presented with strong "opinions," and virtual portfolio changes based on those opinions, aiming for entertainment over accuracy. It's for Twitch viewers fascinated by automated systems, experimental streams, and a simplified, gamified take on market sentiment.
+
+# Core Features
+
+1.  Live News Feed & Event Context:
+    *   What it does: Continuously scrapes posts from predefined subreddits and displays them. Tracks a small, manually set list of upcoming financial events.
+    *   Why it's important: Provides the real-time data input and the context (events) for the system's analysis. Keeps the stream dynamic.
+    *   How it works at a high level: Fetches subreddit posts via API. Displays titles/snippets in a dedicated UI panel alongside the list of tracked upcoming events.
+
+2.  Dynamic Sentiment Analysis & "Opinion" Display:
+    *   What it does: Analyzes news related to tracked events using basic keyword sentiment. Crucially, displays the system's current "thinking" or rationale alongside a clear, strong bias (e.g., "Strong CALL Bias - news overwhelmingly positive!", "Leaning PUT - negative chatter increasing"). Includes a visual countdown timer for each upcoming event.
+    *   Why it's important: This is the core entertainment driver. Showing the changing sentiment and the system's "confident" interpretation makes the process engaging and gives the stream personality. Countdowns add anticipation.
+    *   How it works at a high level: Links news to events via keywords. Applies simple +/- word counting for sentiment. Aggregates scores. Generates a templated "thinking" text based on the current score and trend (e.g., "Saw 5 positive mentions for XYZ earnings, only 1 negative. Confidence HIGH for CALL."). Displays this text prominently alongside the event, its countdown, and the resulting P/C/H bias.
+
+3.  Simulated Action & Virtual Portfolio:
+    *   What it does: Locks the bias sometime before the event. After the event time passes, adjusts a single virtual portfolio number based only on the locked bias (e.g., CALL bias -> +X points, PUT bias -> -Y points).
+    *   Why it's important: Provides a simple consequence loop for the system's predictions, showing a score change over time. Less focus here than on the dynamic analysis phase.
+    *   How it works at a high level: Simple time-based lock rule. Update the portfolio value (in-memory number) based on the locked bias. Display the value clearly. No real market data used for outcomes in MVP.
+
+4.  Continuous Twitch Stream Output:
+    *   What it does: Broadcasts the application's visual interface live on Twitch 24/7.
+    *   Why it's important: Delivers the experience to the target audience.
+    *   How it works at a high level: Captures the application UI (e.g., via OBS) and streams to Twitch (RTMP).
+
+# User Experience
+
+*   User Personas:
+    *   The Viewer: The primary audience. Passively watches the stream on Twitch. Drawn by curiosity about automated systems, finance-as-entertainment, or unique streams. Does not interact with the system in MVP.
+*   Key User Flows:
+    1.  Discover stream on Twitch.
+    2.  Observe UI: News feed scrolling, upcoming events listed with countdown timers.
+    3.  Read the system's dynamic "thinking" text and see the strong P/C/H bias update based on news.
+    4.  Notice when a bias is locked (less emphasis).
+    5.  See the virtual portfolio value change after an event time passes.
+    6.  Continue watching the cycle repeat.
+*   UI/UX Considerations:
+    *   Layout: Clear, distinct zones for News Feed, Event List (incl. Countdown, Thinking Text, Bias), and Portfolio Value.
+    *   Visual Dynamism: High priority on visible updates – news scrolling, sentiment scores/bias changing, "thinking" text updating, countdowns ticking, portfolio value changes animated slightly.
+    *   Personality/Engagement: The "thinking" text and strong bias display are key for making the stream interesting. Countdowns build anticipation.
+    *   Readability: Clear fonts, good contrast, suitable for stream viewing.
+    *   Simplicity: Avoid complex financial charts/jargon. Focus on the News -> Analysis -> Bias -> Outcome loop.
+
+# Technical Architecture
+
+*   System Components:
+    *   News Scraper (Module interacting with Reddit API)
+    *   Analysis Engine (Module for keyword matching, basic sentiment scoring, templated "thinking" text generation, bias logic)
+    *   Event Manager (Module managing event list, state, countdowns, lock-in timing)
+    *   Portfolio Manager (Module managing the virtual portfolio value)
+    *   State Repository (Simple in-memory store or lightweight DB like SQLite for events, portfolio)
+    *   UI Renderer (Module generating the visual output)
+    *   Streaming Interface (Likely external: configuration of OBS to capture UI Renderer output)
+*   Data Models (Conceptual):
+    *   `NewsItem`: { id, source, title, snippet, timestamp }
+    *   `TrackedEvent`: { id, name, event_time, keywords: [], current_sentiment_score, predicted_action (bias), thinking_text, is_locked, lock_time }
+    *   `VirtualPortfolio`: { current_value }
+*   APIs and Integrations:
+    *   Input: Reddit API (for scraping).
+    *   Output: RTMP stream (via OBS integration) to Twitch ingest servers.
+    *   Internal: Components likely communicate via direct function calls within a single application process (monolith for MVP).
+*   Infrastructure Requirements:
+    *   Reliable server/cloud instance (e.g., EC2, GCP) capable of 24/7 execution.
+    *   Stable internet connection with adequate upstream bandwidth for streaming (~6-10 Mbps).
+    *   OS (e.g., Linux), runtime environment (e.g., Python/Node/Go), required libraries.
+    *   Streaming software (OBS Studio recommended).
+
+# Development Roadmap
+
+*   MVP Requirements (Scope for initial build):
+    1.  Establish basic application framework, logging, configuration management.
+    2.  Implement core data structures (`NewsItem`, `TrackedEvent`, `VirtualPortfolio`).
+    3.  Allow manual configuration of tracked events (name, time, keywords) via file or code.
+    4.  Build the news scraper module for one specified subreddit API.
+    5.  Create the basic UI layout with designated areas (can be text-based initially).
+    6.  Implement keyword matching logic to link news items to configured events.
+    7.  Implement rudimentary keyword-based sentiment scoring (+/- word counting).
+    8.  Implement the templated "thinking" text generator based on sentiment score/trend.
+    9.  Implement logic to aggregate sentiment per event and determine a strong P/C/H bias.
+    10. Implement and display countdown timers for each tracked event.
+    11. Implement basic state management (in-memory) for event status and portfolio value.
+    12. Implement a simple time-based rule for locking the action bias.
+    13. Implement the virtual portfolio update logic (fixed +/- adjustment based on locked bias after event time).
+    14. Connect the backend state (news, event status, bias, thinking text, portfolio) to populate the UI elements.
+    15. Configure OBS (or similar) to capture the application window/output and stream reliably to Twitch.
+*   Future Enhancements (Post-MVP Ideas):
+    *   Add more news sources (other subreddits, news APIs, Twitter).
+    *   Improve NLP/sentiment analysis (libraries like VADER, spaCy, basic ML models).
+    *   Replace templated "thinking" with dynamic generation via an LLM.
+    *   Implement dynamic event discovery (parsing financial calendars).
+    *   Use real market data to determine virtual outcome success/failure (still virtual portfolio).
+    *   Introduce viewer interaction elements (e.g., voting, suggestions - requires careful design).
+    *   Develop more sophisticated simulation (individual positions, volatility).
+    *   Integrate with paper trading APIs.
+    *   Potentially integrate with real trading APIs (major undertaking, high risk).
+
+# Logical Dependency Chain (MVP Build Order)
+
+1.  Foundation: Setup project, define core data models (`TrackedEvent`, `NewsItem`, `VirtualPortfolio`), implement manual event configuration loading.
+2.  Input: Build and test the news scraper for one source.
+3.  Core Logic - Analysis: Implement keyword linker (News -> Event). Implement basic sentiment scoring. Implement the templated "thinking" text generator. Implement bias determination logic.
+4.  Core Logic - Simulation: Implement action lock-in rule. Implement virtual portfolio update logic.
+5.  Output - UI Core: Create basic UI layout. Display configured events. Display incoming news. Display event countdowns. Display portfolio value.
+6.  Integration & Polish: Connect analysis results (sentiment, bias, thinking text) to the UI display. Ensure portfolio updates reflect in the UI. Verify the end-to-end flow: News -> Analysis -> State Update -> UI Update -> (Event Time) -> Portfolio Update -> UI Update.
+7.  Output - Streaming: Configure and test OBS streaming of the application UI to Twitch. Ensure stability.
+
+# Risks and Mitigations
+
+*   Technical - Scraping/Streaming Stability:
+    *   Risk: API changes, rate limits, network issues, application crashes disrupt the stream.
+    *   Mitigation: Use official APIs correctly, implement error handling & retries, ensure stable hosting/network, use reliable streaming software (OBS), consider basic process monitoring/restarts.
+*   Engagement - Viewer Interest:
+    *   Risk: The MVP loop is too simple, "thinking" text feels repetitive, lack of interaction leads to boredom.
+    *   Mitigation: Focus UI on dynamism and clarity. Make "thinking" templates varied. Clearly label stream as an "MVP experiment". Iterate based on early feedback. Keep the core loop visually active.
+*   Scope - MVP Complexity Creep:
+    *   Risk: Temptation to add better analysis, more sources, UI polish beyond the essential MVP loop.
+    *   Mitigation: Strictly follow the MVP requirements defined here. Defer all other ideas to "Future Enhancements". Prioritize the core loop demonstration.
+*   Sentiment Analysis Accuracy:
+    *   Risk: The basic keyword sentiment analysis is inherently limited and often inaccurate.
+    *   Mitigation: Accept for MVP. Focus is on demonstrating the process and creating engaging content, not financial accuracy. Use clear disclaimers on stream/profile about the simulation's nature.
+
+# Appendix
+
+*   (Placeholder) Specific Subreddit(s) identified for MVP (e.g., r/wallstreetbets, r/investing).
+*   (Placeholder) Example set of keywords for tracking a hypothetical event (e.g., "AAPL Earnings": `["apple", "aapl", "earnings", "iphone", "macbook", "tim cook"]`).
+*   (Placeholder) Example templates for "thinking" text generation:
+    *   Score > +3: "Strong CALL vibes - seeing mostly positive news ({positive_count} vs {negative_count})!"
+    *   Score < -3: "Leaning heavily PUT - negative chatter ({negative_count} vs {positive_count}) is winning out."
+    *   Score near 0: "Feeling uncertain... HOLD for now. News is mixed ({positive_count} vs {negative_count})."
+*   (Placeholder) Basic UI Layout Sketch / Wireframe.
+*   (Placeholder) Chosen primary programming language/framework (e.g., Python with `requests`/`praw`, `tkinter`/`PyQt` or even just formatted console output piped to OBS text source).
+
+</PRD>

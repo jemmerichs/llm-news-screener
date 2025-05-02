@@ -1,0 +1,26 @@
+# Core dependencies
+pydantic>=2.6.1  # For data validation and settings management
+PyYAML>=6.0.1    # For YAML configuration files
+python-dotenv>=1.0.0  # For environment variable management
+
+# Reddit API
+praw>=7.7.1      # Python Reddit API Wrapper
+
+# Logging
+loguru>=0.7.2    # Better logging capabilities
+
+# Testing
+pytest>=8.0.0    # For unit testing
+pytest-cov>=4.1.0  # For test coverage reporting
+pytest-asyncio>=0.23.5  # For async test support
+
+# Natural Language Processing
+anthropic>=0.18.1  # For LLM-based sentiment analysis
+
+# Async and Rate Limiting
+aiohttp>=3.9.3   # For async HTTP requests
+ratelimit>=2.2.1  # For API rate limiting
+
+# Web server
+fastapi>=0.110.0
+uvicorn>=0.29.0 

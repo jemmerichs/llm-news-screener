@@ -1,0 +1,56 @@
+# Reddit Configuration
+reddit:
+  subreddits:
+    - wallstreetbets
+    - stocks
+    - investing
+    - StockMarket
+    - options
+    - pennystocks
+    - spacs
+    - robinhood
+#    - stocks
+  fetch_interval: 10  # seconds
+  max_posts_per_fetch: 1
+
+# Event Configuration
+events:
+  - id: "market_open_nvda"
+    name: "NVIDIA Market Opening"
+    event_time: "2025-05-03T13:30:00Z"
+    keywords:
+      - "NVIDIA"
+      - "NVDA"
+      - "market open"
+      - "stock"
+      - "Nasdaq"
+  
+  - id: "earnings_aapl_q2"
+    name: "Apple Q2 2024 Earnings"
+    event_time: "2024-04-25T20:30:00Z"
+    keywords:
+      - "Apple earnings"
+      - "AAPL"
+      - "iPhone sales"
+      - "App Store revenue"
+
+# Portfolio Configuration
+portfolio:
+  initial_value: 1000.0
+  points_per_correct: 100
+  points_per_incorrect: -50
+
+# Sentiment Analysis
+sentiment:
+  lock_hours_before: 1  # Lock bias 1 hour before event
+  min_confidence: 0.6   # Minimum confidence score to make prediction
+  
+# Logging Configuration
+logging:
+  level: INFO
+  file: logs/app.log
+  max_size: 10MB
+  backup_count: 5
+
+# UI/State update interval (seconds)
+ui_update_interval: 5 
