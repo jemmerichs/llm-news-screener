@@ -23,6 +23,7 @@ class TrackedEvent(BaseModel):
     name: str = Field(..., description="Name of the event")
     event_time: datetime = Field(..., description="When the event is scheduled to occur")
     keywords: List[str] = Field(..., description="Keywords to match against news items")
+    stock: Optional[str] = Field(None, description="Associated stock/ETF ticker")
     current_sentiment_score: float = Field(default=0.0, description="Current sentiment score based on news analysis")
     predicted_action: Optional[str] = Field(None, description="Predicted action (Put/Call/Hold)")
     thinking_text: Optional[str] = Field(None, description="Generated text explaining the current analysis")

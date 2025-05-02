@@ -13,27 +13,6 @@ reddit:
   fetch_interval: 10  # seconds
   max_posts_per_fetch: 1
 
-# Event Configuration
-events:
-  - id: "market_open_nvda"
-    name: "NVIDIA Market Opening"
-    event_time: "2025-05-03T13:30:00Z"
-    keywords:
-      - "NVIDIA"
-      - "NVDA"
-      - "market open"
-      - "stock"
-      - "Nasdaq"
-  
-  - id: "earnings_aapl_q2"
-    name: "Apple Q2 2024 Earnings"
-    event_time: "2024-04-25T20:30:00Z"
-    keywords:
-      - "Apple earnings"
-      - "AAPL"
-      - "iPhone sales"
-      - "App Store revenue"
-
 # Portfolio Configuration
 portfolio:
   initial_value: 1000.0
@@ -54,3 +33,6 @@ logging:
 
 # UI/State update interval (seconds)
 ui_update_interval: 5 
+
+# Maximum number of events allowed
+max_events: 10 

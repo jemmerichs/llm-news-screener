@@ -10,6 +10,9 @@ from src.models import NewsItem, TrackedEvent, Insight
 from src.app_repository import EventRepository
 import openai
 
+# NewsAnalyzer: Only handles news analysis for events.
+# For LLM-powered event discovery, see LLMEventService in event_llm_service.py
+
 class NewsAnalyzer:
     def __init__(self):
         api_key = os.getenv('ANTHROPIC_API_KEY')
@@ -101,56 +104,3 @@ class NewsAnalyzer:
         # Delay only after finishing all analysis and logging
         await asyncio.sleep(3)
         return result 
-
-    async def update_events_with_llm(self, event_repo: EventRepository, openai_api_key: str):
-        """
-        Uses OpenAI (with web search) to fetch and update the top three upcoming financial events.
-        Replaces any previous upcoming events in the repository.
-        """
-        import json
-        import asyncio
-        openai.api_key = openai_api_key
-        prompt = (
-            "What are the next top three upcoming financial events? "
-            "List the three top events, ideally this or next week, and for each one, "
-            "give a specific stock (mainstream like SPY or a meme/hype stock) that is linked to the event. "
-            "Return the result as a JSON array with fields: id, name, event_time (ISO8601), keywords (list), stock."
-        )
-        try:
-            response = await openai.ChatCompletion.acreate(
-                model="gpt-4-1106-preview",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=600,
-                temperature=0.2,
-                tools=[{"type": "web_search"}]
-            )
-            llm_response = response['choices'][0]['message']['content']
-            events = json.loads(llm_response)
-            assert isinstance(events, list) and len(events) == 3
-        except Exception as e:
-            logger.error(f"Failed to fetch or parse LLM events: {e}\nResponse: {locals().get('llm_response', None)}")
-            return False
-
-        # Remove previous upcoming events (next 2 weeks)
-        from datetime import datetime, timezone, timedelta
-        now = datetime.now(timezone.utc)
-        for event in list(event_repo._events.values()):
-            event_time = event.event_time
-            if isinstance(event_time, str):
-                event_time = datetime.fromisoformat(event_time.replace("Z", "+00:00"))
-            if now <= event_time < now + timedelta(days=14):
-                event_repo.remove(event.id)
-
-        # Add new events
-        from src.models import TrackedEvent
-        for event in events:
-            tracked_event = TrackedEvent(
-                id=event["id"],
-                name=event["name"],
-                event_time=event["event_time"],
-                keywords=event.get("keywords", []),
-            )
-            event_repo.add(tracked_event)
-        logger.info(f"update_events_with_llm: Updated to {len(events)} new upcoming events.")
-        await asyncio.sleep(1)
-        return True 

@@ -4,7 +4,7 @@ html, body {
     background: #181818;
     color: #f0f0f0;
     font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     box-sizing: border-box;
     overflow-x: hidden;
 }
@@ -12,13 +12,13 @@ html, body {
     display: grid;
     grid-template-columns: 1fr 1.2fr 1fr;
     grid-template-rows: 100vh;
-    gap: 16px;
+    gap: 10px;
     height: 100vh;
     width: 100vw;
     box-sizing: border-box;
     grid-template-areas: 'left middle right';
     overflow: hidden;
-    padding: 16px;
+    padding: 10px;
 }
 #left-panel, #middle-panel, #news-panel, #llm-log-panel, #portfolio-panel, #events-panel {
     box-sizing: border-box;
@@ -41,7 +41,7 @@ html, body {
     height: 100%;
     width: 100%;
     background: #232323;
-    padding: 24px;
+    padding: 16px;
     border-radius: 12px;
     box-shadow: 0 2px 8px #000a;
     display: flex;
@@ -50,10 +50,10 @@ html, body {
 }
 #llm-log-panel, #portfolio-panel, #events-panel {
     background: #232323;
-    padding: 24px;
+    padding: 16px;
     border-radius: 12px;
     box-shadow: 0 2px 8px #000a;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     width: 100%;
 }
 #llm-log-panel {
@@ -61,10 +61,10 @@ html, body {
     white-space: pre-line;
     height: 100%;
     overflow-y: visible;
-    padding: 10px 8px;
+    padding: 8px 6px;
 }
 #portfolio-panel {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 #events-panel {
     margin-bottom: 0;
@@ -98,19 +98,19 @@ html, body {
     background: #181818;
     color: #b0ffb0;
     font-family: monospace;
-    font-size: 1rem;
-    padding: 18px;
+    font-size: 0.85rem;
+    padding: 12px;
     border-radius: 12px;
     box-shadow: 0 2px 8px #000a;
-    margin: 16px;
-    height: 300px;
+    margin: 10px;
+    max-height: 250px;
     overflow-y: auto;
     white-space: pre-wrap;
 }
 
 #llm-log-panel > div {
     margin-bottom: 0;
-    padding: 0 6px 0 6px;
+    padding: 0 4px 0 4px;
     line-height: 1.1;
 }
 #llm-log-panel > div:last-child {

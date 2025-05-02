@@ -13,13 +13,26 @@ from src.config import load_config
 from src.logger import setup_logging
 from src.app_repository import AppRepository
 from src.portfolio_manager import PortfolioManager
-from src.models import TrackedEvent, VirtualPortfolio, NewsItem
+from src.models import TrackedEvent
 from src.news_analyzer import NewsAnalyzer
 from src.event_predictor import Predictor
 from src.reddit_scraper import RedditScraper
+from src.find_target_events import FindTargetEvents
 
-# Initialize repositories
-app_repo = AppRepository()
+# Load configuration
+load_dotenv()
+config = load_config(Path("config/config.yaml"))
+setup_logging(config.logging)
+logger.info("Starting TwitchBot...")
+logger.info("Test log: server started and logging is working.")
+
+# Initialize NewsAnalyzer after dotenv is loaded
+news_analyzer = NewsAnalyzer()
+
+# Load state from disk if available
+state_file = "state.json"
+state_exists = os.path.exists(state_file)
+app_repo = AppRepository(max_events=getattr(config, 'max_events', 10))
 portfolio_manager = PortfolioManager()
 # Store global LLM log entries
 app_repo.llm_log = []
@@ -38,33 +51,59 @@ def main(with_signals=True):
         news_analyzer = NewsAnalyzer()
 
         # Load state from disk if available
+        state_file = "state.json"
+        state_exists = os.path.exists(state_file)
         app_repo.load()
-        # Remove events not present in config
-        config_event_ids = {e.id for e in config.events}
-        for event in list(app_repo.events.get_all()):
-            if event.id not in config_event_ids:
-                logger.info(f"Removing event not in config: {event.id}")
-                app_repo.events.remove(event.id)
-        # Load events from config (add only if not already present)
-        for event_cfg in config.events:
-            # Always convert EventConfig to TrackedEvent
-            event = TrackedEvent(
-                id=event_cfg.id,
-                name=event_cfg.name,
-                event_time=event_cfg.event_time,
-                keywords=event_cfg.keywords
-            )
-            logger.info(f"main.py: Adding event from config of type {type(event)}")
-            assert isinstance(event, TrackedEvent), f"Attempted to add non-TrackedEvent: {event}"
-            if not app_repo.events.get(event.id):
+        if not state_exists:
+            # Seed events from config.yaml only if state.json does not exist
+            for event_cfg in config.events:
+                event = TrackedEvent(
+                    id=event_cfg.id,
+                    name=event_cfg.name,
+                    event_time=event_cfg.event_time,
+                    keywords=event_cfg.keywords
+                )
+                logger.info(f"main.py: Adding event from config of type {type(event)}")
+                assert isinstance(event, TrackedEvent), f"Attempted to add non-TrackedEvent: {event}"
                 event_time = event.event_time
                 if event_time.tzinfo is None:
                     event_time = event_time.replace(tzinfo=timezone.utc)
                 event.event_time = event_time
                 app_repo.events.add(event)
                 logger.info(f"Added event from config: {event.id}")
-        # Force immediate save to debug state
-        app_repo.save()
+            # Force immediate save to debug state
+            app_repo.save()
+
+        # --- Event update logic: ensure at least 3 up-to-date events ---
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc)
+        # Remove outdated events
+        current_events = app_repo.events.get_all()
+        outdated_ids = [e.id for e in current_events if e.event_time < now]
+        for eid in outdated_ids:
+            app_repo.events.remove(eid)
+        # Refresh current events after removals
+        current_events = app_repo.events.get_all()
+        needed = 3 - len(current_events)
+        logger.info(f"Event update: needed={needed}, outdated_ids={outdated_ids}")
+        if needed > 0:
+            logger.info("Attempting to fetch new events from LLM...")
+            # Call the synchronous method to get LLM events
+            llm_events = FindTargetEvents().get_llm_events(needed)
+            logger.info(f"Fetched {len(llm_events)} events from LLM: {[e.id for e in llm_events]}")
+            # Only add events that are not already present (by ID)
+            existing_ids = {e.id for e in app_repo.events.get_all()}
+            added = False
+            for event in llm_events:
+                if event.id not in existing_ids:
+                    logger.info(f"Adding event to repository: {event.id} - {event.name}")
+                    app_repo.events.add(event)
+                    added = True
+            logger.info(f"Current events after update: {[e.id for e in app_repo.events.get_all()]}")
+            if added or outdated_ids:
+                app_repo.save()
+                logger.info("Saved state after event update.")
+
         last_save = time.time()
 
         # Initialize RedditScraper directly

@@ -38,11 +38,11 @@ class LoggingConfig(BaseModel):
 class AppConfig(BaseModel):
     """Main application configuration."""
     reddit: RedditConfig
-    events: List[EventConfig]
     portfolio: PortfolioConfig
     sentiment: SentimentConfig
     logging: LoggingConfig
     ui_update_interval: int = Field(5, description="Interval (in seconds) between UI/state updates")
+    max_events: int = Field(10, description="Maximum number of events allowed")
 
 def load_config(config_path: str | Path) -> AppConfig:
     """

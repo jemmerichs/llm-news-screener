@@ -7,8 +7,9 @@ from loguru import logger
 from datetime import datetime, timezone
 
 class EventRepository:
-    def __init__(self):
+    def __init__(self, max_events: int = 10):
         self._events: dict[str, TrackedEvent] = {}
+        self.max_events = max_events
     def add(self, event: TrackedEvent):
         from src.models import TrackedEvent as TrackedEventModel
         logger.info(f"EventRepository.add: Adding event of type {type(event)}")
@@ -17,7 +18,11 @@ class EventRepository:
             event = TrackedEventModel(**event)
         if event.id in self._events:
             raise ValueError(f"Event with ID {event.id} already exists")
+        if len(self._events) >= self.max_events:
+            logger.warning(f"EventRepository: Max events limit ({self.max_events}) reached. Not adding event {event.id}.")
+            return False
         self._events[event.id] = event
+        return True
     def update(self, event_id: str, new_event: TrackedEvent):
         from src.models import TrackedEvent as TrackedEventModel
         if isinstance(new_event, dict):
@@ -72,8 +77,8 @@ class PortfolioRepository:
         return self.portfolio
 
 class AppRepository:
-    def __init__(self):
-        self.events = EventRepository()
+    def __init__(self, max_events: int = 10):
+        self.events = EventRepository(max_events=max_events)
         self.news = NewsRepository()
         self.portfolio = PortfolioRepository()
         self.llm_log = []
@@ -101,7 +106,8 @@ class AppRepository:
                 state = json.load(f)
             # Restore events
             self.events._events = {}
-            for e in state.get("events", []):
+            events_to_load = state.get("events", [])[:self.events.max_events]
+            for e in events_to_load:
                 from src.models import TrackedEvent
                 self.events.add(TrackedEvent(**e))
             # Restore news

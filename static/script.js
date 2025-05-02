@@ -62,10 +62,10 @@ function updatePanels(data) {
     if (data.llm_log && data.llm_log.length > 0) {
         llmLogHtml += data.llm_log.map(entry => `
             <div style="margin-bottom:0;padding:4px 6px 3px 6px;border-radius:5px;background:#23282c;border:1px solid #2a2e32;">
-                ${entry.event_id ? `<span style='font-size:1em;font-weight:600;color:#ffd700;'>Event: ${entry.event_id}</span><br>` : ''}
-                <span style="font-size:0.97em;color:#b0ffb0;"><b>News:</b> ${entry.news_title ?? ''}</span><br>
-                <span style="font-size:0.96em;color:#fff;"><span style="color:#7fd7ff;font-weight:500;">Thought:</span> ${entry.text}</span><br>
-                <span style="font-size:0.92em;color:#aaa;"><b>Score:</b> <span style="color:${scoreColor(entry.score)}">${entry.score}</span> <b>Trend:</b> ${entry.trend} <span style='color:#888;font-size:0.88em;'> &middot; ${entry.added_at ? new Date(entry.added_at).toLocaleString() : new Date(entry.timestamp).toLocaleString()}</span></span>
+                ${entry.event_id ? `<span style='font-weight:600;color:#ffd700;'>Event: ${entry.event_id}</span><br>` : ''}
+                <span style="color:#b0ffb0;"><b>News:</b> ${entry.news_title ?? ''}</span><br>
+                <span style="color:#fff;"><span style="color:#7fd7ff;font-weight:500;">Thought:</span> ${entry.text}</span><br>
+                <span style="color:#aaa;"><b>Score:</b> <span style="color:${scoreColor(entry.score)}">${entry.score}</span> <b>Trend:</b> ${entry.trend} <span style='color:#888;font-size:0.88em;'> &middot; ${entry.added_at ? new Date(entry.added_at).toLocaleString() : new Date(entry.timestamp).toLocaleString()}</span></span>
             </div>
         `).join('');
     } else {
