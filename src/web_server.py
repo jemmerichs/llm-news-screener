@@ -3,14 +3,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-import json
+
 from src.logger import setup_logging
 from src.main import app_repo, main as main_loop
 import threading
-import time
+
 
 # Ensure logging is set up even if main.py is not run
-default_logging_config = type('LoggingConfig', (), {"file": "logs/app.log", "max_size": "10 MB", "backup_count": "10 days", "level": "DEBUG"})()
+default_logging_config = type(
+    "LoggingConfig",
+    (),
+    {
+        "file": "logs/app.log",
+        "max_size": "10 MB",
+        "backup_count": "10 days",
+        "level": "DEBUG",
+    },
+)()
 setup_logging(default_logging_config)
 
 app = FastAPI()
@@ -24,6 +33,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.on_event("startup")
 def start_background_thread():
     def run_main_loop():
@@ -31,10 +41,13 @@ def start_background_thread():
             main_loop(with_signals=False)
         except Exception as e:
             import traceback
+
             print("Background main loop crashed:", e)
             traceback.print_exc()
+
     thread = threading.Thread(target=run_main_loop, daemon=True)
     thread.start()
+
 
 @app.get("/api/state")
 def get_state(news_limit: str = Query("10")):
@@ -50,11 +63,15 @@ def get_state(news_limit: str = Query("10")):
         print("/api/state: news count:", len(state["news_items"]))
         return JSONResponse(content=state)
     except Exception:
-        return JSONResponse(content={"events": [], "portfolio": {}, "news_items": [], "llm_log": []})
+        return JSONResponse(
+            content={"events": [], "portfolio": {}, "news_items": [], "llm_log": []}
+        )
+
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
 
 @app.get("/api/logs")
 def get_logs():
@@ -66,15 +83,18 @@ def get_logs():
     except Exception as e:
         return PlainTextResponse(f"Error reading log: {e}", status_code=500)
 
+
 # Serve static files
 static_dir = Path(__file__).parent.parent / "static"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 
 @app.get("/")
 def root():
     return FileResponse(static_dir / "index.html")
 
+
 @app.on_event("shutdown")
 def shutdown_event():
     print("Shutting down, saving state...")
-    app_repo.save() 
+    app_repo.save()

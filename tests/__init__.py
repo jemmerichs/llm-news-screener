@@ -1,1 +1,1 @@
-"""Unit tests for the TwitchBot application.""" 
+"""Unit tests for the TwitchBot application."""

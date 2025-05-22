@@ -1,34 +1,38 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TwitchBot Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
     <div id="container">
-        <div id="left-panel">
-            <div id="llm-log-panel"></div>
-        </div>
-        <div id="middle-panel">
-            <div id="portfolio-panel"></div>
-            <div id="events-panel"></div>
-        </div>
-        <div>
-            <label for="news-count-select" style="color:#aaa;font-size:0.95em;">Show last </label>
-            <select id="news-count-select">
-                <option value="5">5</option>
-                <option value="10" selected>10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="all">All</option>
-            </select>
-            <label for="news-count-select" style="color:#aaa;font-size:0.95em;"> news</label>
-            <div id="news-panel"></div>
-        </div>
+      <div id="left-panel">
+        <div id="llm-log-panel"></div>
+      </div>
+      <div id="middle-panel">
+        <div id="portfolio-panel"></div>
+        <div id="events-panel"></div>
+      </div>
+      <div>
+        <label for="news-count-select" style="color: #aaa; font-size: 0.95em"
+          >Show last
+        </label>
+        <select id="news-count-select">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="all">All</option>
+        </select>
+        <label for="news-count-select" style="color: #aaa; font-size: 0.95em">
+          news</label
+        >
+        <div id="news-panel"></div>
+      </div>
     </div>
     <div id="server-logs-panel"></div>
     <script src="/static/script.js"></script>
-</body>
-</html> 
+  </body>
+</html>
