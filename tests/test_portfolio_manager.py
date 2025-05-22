@@ -1,7 +1,8 @@
-import pytest
-from datetime import datetime, timedelta
+# import pytest # F401 unused
+from datetime import datetime  # timedelta F401 unused
 from src.models import TrackedEvent
 from src.portfolio_manager import PortfolioManager
+
 
 def make_event(predicted_action):
     return TrackedEvent(
@@ -9,8 +10,9 @@ def make_event(predicted_action):
         name="Event 1",
         event_time=datetime.utcnow(),
         keywords=["test"],
-        predicted_action=predicted_action
+        predicted_action=predicted_action,
     )
+
 
 def test_correct_prediction():
     pm = PortfolioManager(1000)
@@ -20,6 +22,7 @@ def test_correct_prediction():
     assert pm.get_value() == 1100
     assert len(pm.get_history()) == 2
 
+
 def test_incorrect_prediction():
     pm = PortfolioManager(1000)
     event = make_event("Put")
@@ -27,6 +30,7 @@ def test_incorrect_prediction():
     assert new_value == 950
     assert pm.get_value() == 950
     assert len(pm.get_history()) == 2
+
 
 def test_hold_prediction():
     pm = PortfolioManager(1000)
@@ -36,6 +40,7 @@ def test_hold_prediction():
     assert pm.get_value() == 1000
     assert len(pm.get_history()) == 2
 
+
 def test_no_prediction():
     pm = PortfolioManager(1000)
     event = make_event(None)
@@ -43,6 +48,7 @@ def test_no_prediction():
     assert new_value == 1000
     assert pm.get_value() == 1000
     assert len(pm.get_history()) == 2
+
 
 def test_history_tracking():
     pm = PortfolioManager(1000)
@@ -54,4 +60,4 @@ def test_history_tracking():
     assert len(history) == 3
     assert history[0][1] == 1000
     assert history[1][1] == 1100
-    assert history[2][1] == 1050 
+    assert history[2][1] == 1050

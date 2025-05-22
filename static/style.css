@@ -1,118 +1,139 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    background: #181818;
-    color: #f0f0f0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 0.9rem;
-    box-sizing: border-box;
-    overflow-x: hidden;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #181818;
+  color: #f0f0f0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 #container {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr 1fr;
-    grid-template-rows: 100vh;
-    gap: 10px;
-    height: 100vh;
-    width: 100vw;
-    box-sizing: border-box;
-    grid-template-areas: 'left middle right';
-    overflow: hidden;
-    padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  grid-template-rows: 100vh;
+  gap: 10px;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  grid-template-areas: "left middle right";
+  overflow: hidden;
+  padding: 10px;
 }
-#left-panel, #middle-panel, #news-panel, #llm-log-panel, #portfolio-panel, #events-panel {
-    box-sizing: border-box;
+#left-panel,
+#middle-panel,
+#news-panel,
+#llm-log-panel,
+#portfolio-panel,
+#events-panel {
+  box-sizing: border-box;
 }
 #left-panel {
-    grid-area: left;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+  grid-area: left;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 #middle-panel {
-    grid-area: middle;
-    height: 100%;
-    width: 100%;
+  grid-area: middle;
+  height: 100%;
+  width: 100%;
 }
 #news-panel {
-    grid-area: right;
-    height: 100%;
-    width: 100%;
-    background: #232323;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px #000a;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+  grid-area: right;
+  height: 100%;
+  width: 100%;
+  background: #232323;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #000a;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
-#llm-log-panel, #portfolio-panel, #events-panel {
-    background: #232323;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px #000a;
-    margin-bottom: 10px;
-    width: 100%;
+#llm-log-panel,
+#portfolio-panel,
+#events-panel {
+  background: #232323;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #000a;
+  margin-bottom: 10px;
+  width: 100%;
 }
 #llm-log-panel {
-    min-height: 80px;
-    white-space: pre-line;
-    height: 100%;
-    overflow-y: visible;
-    padding: 8px 6px;
+  min-height: 80px;
+  white-space: pre-line;
+  height: 100%;
+  overflow-y: visible;
+  padding: 8px 6px;
 }
 #portfolio-panel {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 #events-panel {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 /* Fade-in animation for events and news */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
-.event, .news-item {
-    animation: fadeIn 0.7s cubic-bezier(.4,0,.2,1);
+.event,
+.news-item {
+  animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Pulse animation for thinking text */
 @keyframes pulse {
-    0% { color: #ffb300; }
-    50% { color: #fff176; }
-    100% { color: #ffb300; }
+  0% {
+    color: #ffb300;
+  }
+  50% {
+    color: #fff176;
+  }
+  100% {
+    color: #ffb300;
+  }
 }
 .thinking-text {
-    animation: pulse 1.2s infinite;
-    font-style: italic;
+  animation: pulse 1.2s infinite;
+  font-style: italic;
 }
 
 #portfolio-panel > *:not(#llm-log-panel) {
-    margin-top: 16px;
+  margin-top: 16px;
 }
 
 #server-logs-panel {
-    background: #181818;
-    color: #b0ffb0;
-    font-family: monospace;
-    font-size: 0.85rem;
-    padding: 12px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px #000a;
-    margin: 10px;
-    max-height: 250px;
-    overflow-y: auto;
-    white-space: pre-wrap;
+  background: #181818;
+  color: #b0ffb0;
+  font-family: monospace;
+  font-size: 0.85rem;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #000a;
+  margin: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  white-space: pre-wrap;
 }
 
 #llm-log-panel > div {
-    margin-bottom: 0;
-    padding: 0 4px 0 4px;
-    line-height: 1.1;
+  margin-bottom: 0;
+  padding: 0 4px 0 4px;
+  line-height: 1.1;
 }
 #llm-log-panel > div:last-child {
-    margin-bottom: 0;
-} 
+  margin-bottom: 0;
+}

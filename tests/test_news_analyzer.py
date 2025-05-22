@@ -1,11 +1,14 @@
-from dotenv import load_dotenv
-load_dotenv()
 import pytest
 from datetime import datetime
 from unittest.mock import Mock, patch
+from dotenv import load_dotenv
+import os
 
 from src.models import NewsItem, TrackedEvent
 from src.news_analyzer import NewsAnalyzer
+
+load_dotenv()
+
 
 @pytest.fixture
 def sample_news_item():
@@ -14,8 +17,9 @@ def sample_news_item():
         source="test_source",
         title="Positive market outlook for tech sector",
         snippet="Analysts predict strong growth and increased profits.",
-        timestamp=datetime.utcnow()
+        timestamp=datetime.utcnow(),
     )
+
 
 @pytest.fixture
 def sample_event():
@@ -24,23 +28,32 @@ def sample_event():
         name="Tech Sector Report",
         event_time=datetime.utcnow(),
         keywords=["tech", "market", "growth"],
-        current_sentiment_score=0.0
+        current_sentiment_score=0.0,
     )
+
 
 @pytest.fixture
 def mock_llm_response():
-    return """EVENT_ID: event1
-RELEVANCE: Market growth predictions remain strong despite challenges\nAnalyst confidence suggests potential for exceeding expectations
-SCORE: 0.6
-TREND: improving"""
+    return (
+        "EVENT_ID: event1\n"
+        "RELEVANCE: Market growth predictions remain strong despite challenges\n"
+        "Analyst confidence suggests potential for exceeding expectations\n"
+        "SCORE: 0.6\n"
+        "TREND: improving"
+    )
+
 
 @pytest.fixture
 def analyzer():
     return NewsAnalyzer()
 
+
+@pytest.mark.skipif(not os.getenv("ANTHROPIC_API_KEY"), reason="ANTHROPIC_API_KEY not set")
 @pytest.mark.asyncio
-async def test_analyze_simple(analyzer, sample_event, sample_news_item, mock_llm_response):
-    with patch.object(analyzer.client.messages, 'create') as mock_create:
+async def test_analyze_simple(
+    analyzer, sample_event, sample_news_item, mock_llm_response
+):
+    with patch.object(analyzer.client.messages, "create") as mock_create:
         mock_create.return_value.content = [Mock(text=mock_llm_response)]
         results = await analyzer.analyze(sample_news_item, [sample_event])
         for event_id, insight in results:
@@ -48,6 +61,8 @@ async def test_analyze_simple(analyzer, sample_event, sample_news_item, mock_llm
                 sample_event.insights.append(insight)
         assert len(sample_event.insights) == 1
         insight = sample_event.insights[0]
-        assert "Market growth predictions remain strong despite challenges" in insight.text
+        assert (
+            "Market growth predictions remain strong despite challenges" in insight.text
+        )
         assert insight.score == 0.6
-        assert insight.trend == "improving" 
+        assert insight.trend == "improving"

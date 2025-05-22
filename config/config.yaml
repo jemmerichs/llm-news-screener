@@ -9,7 +9,6 @@ reddit:
     - pennystocks
     - spacs
     - robinhood
-#    - stocks
   fetch_interval: 10  # seconds
   max_posts_per_fetch: 1
 
