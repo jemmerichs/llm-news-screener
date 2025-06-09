@@ -181,17 +181,15 @@ def main(with_signals=True):
                     for event_id, insight in results:
                         if event_id == "__global__":
                             current_time_iso = datetime.now(timezone.utc).isoformat()
-                            log_entry = (
-                                {
-                                    "text": insight.text,
-                                    "score": insight.score,
-                                    "trend": insight.trend,
-                                    "timestamp": insight.timestamp.isoformat(),
-                                    "news_id": news.id,
-                                    "news_title": news.title,
-                                    "added_at": current_time_iso,
-                                },
-                            )
+                            log_entry = {
+                                "text": insight.text,
+                                "score": insight.score,
+                                "trend": insight.trend,
+                                "timestamp": insight.timestamp.isoformat(),
+                                "news_id": news.id,
+                                "news_title": news.title,
+                                "added_at": current_time_iso,
+                            }
                             app_repo.llm_log.insert(0, log_entry)
                         else:
                             event = next(
